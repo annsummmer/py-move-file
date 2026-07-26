@@ -1,6 +1,5 @@
 import os
 
-
 def move_file(command: str) -> None:
     parts = command.split()
 
@@ -11,12 +10,23 @@ def move_file(command: str) -> None:
     if command_name != "mv":
         return
 
-    if not os.path.isfile(file_to_move):
-        return
+    home_dir = os.getcwd()
+    content = ""
 
-    folder_path = os.path.dirname(path)
+    with open(file_to_move, "r") as src:
+        content = src.read()
 
-    if folder_path:
-        os.makedirs(folder_path, exist_ok=True)
+    elems = path.split("/")
+    folder_path = elems[:-1]
+    file_name = elems[-1]
 
-    os.rename(file_to_move, path)
+    for i, key in enumerate(folder_path):
+        if not os.path.isdir(key):
+            os.mkdir(key)
+        os.chdir(key)
+
+    with open(file_name, "w") as f:
+        f.write(content)
+
+    os.chdir(home_dir)
+    os.remove(file_to_move)
