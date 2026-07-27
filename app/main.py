@@ -16,17 +16,16 @@ def move_file(command: str) -> None:
     with open(file_to_move, "r") as src:
         content = src.read()
 
-    elems = path.split("/")
-    folder_path = elems[:-1]
-    file_name = elems[-1]
+    folder_path = os.path.dirname(path)
+    file_name = os.path.basename(path)
 
-    for i, key in enumerate(folder_path):
-        if not os.path.isdir(key):
-            os.mkdir(key)
-        os.chdir(key)
+    full_path = os.path.join(folder_path, file_name)
 
-    with open(file_name, "w") as f:
+    if folder_path and not os.path.isdir(folder_path):
+        os.makedirs(folder_path, exist_ok=True)
+
+    with open(full_path, "w") as f:
         f.write(content)
 
     os.chdir(home_dir)
-    os.remove(file_to_move)
+    os.remove(os.path.join(home_dir, file_to_move))
